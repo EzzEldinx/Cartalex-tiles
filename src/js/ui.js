@@ -56,6 +56,11 @@ export function buildLayerList(layers, map, historicalMapIds = []) {
     const container = document.getElementById('items');
     if (!container) return;
 
+    // START: HIDE ANIMATION LAYERS
+    // Define the IDs of the animation layers that should be hidden from the UI.
+    const hiddenLayerIds = ['sites_fouilles-pulse', 'sites_fouilles-waves'];
+    // END: HIDE ANIMATION LAYERS
+
     const layerNameMap = {
         'osm-background': 'OpenStreetMap - Humanitarian',
         'satellite-background': 'Google Earth',
@@ -69,9 +74,15 @@ export function buildLayerList(layers, map, historicalMapIds = []) {
 
     let html = '';
     layers.forEach(layer => {
+        // START: HIDE ANIMATION LAYERS
+        // If the current layer's ID is in our hidden list, skip it and do not create a list item.
+        if (hiddenLayerIds.includes(layer.id)) {
+            return; 
+        }
+        // END: HIDE ANIMATION LAYERS
+
         let layerName = layerNameMap[layer.id] || layer.id.replace(/-/g, ' ');
 
-        // --- THE FIX: Correctly check the initial visibility state from the map ---
         const isVisible = map.getLayoutProperty(layer.id, 'visibility') !== 'none';
         const checkedAttribute = isVisible ? 'checked' : '';
 
@@ -187,3 +198,4 @@ export function attachAllEventListeners(filters, onFilterChangeCallback, onLayer
     });
   });
 }
+
