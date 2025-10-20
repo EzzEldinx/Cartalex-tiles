@@ -1,0 +1,53 @@
+/* =====================
+   Cartalex Base Styles
+   ===================== */
+
+:root {
+  --primary-bg: #f0de6b;
+  --primary-border: #b8a186;
+  --primary-text: rgba(18, 97, 130, 0.9);
+  --accent: rgba(149, 116, 75, 0.9);
+  --white: #fff;
+  --focus-outline: 2px solid #005fcc;
+}
+
+/* ========== Global Reset & Base ========== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: sans-serif;
+  font-size: 0.95rem;
+}
+html, body {
+  margin: 0;
+  height: 100%;
+  background: var(--white);
+  color: var(--primary-text);
+}
+h1 {
+  color: blue;
+}
+#title-infos {
+  display: flex;
+}
+#carte-menu {
+  color: pink;
+}
+
+/* ========== Accessibility: Focus States ========== */
+a:focus, button:focus, input:focus {
+  outline: var(--focus-outline);
+  outline-offset: 2px;
+}
+
+/* ========== Responsive Design ========== */
+@media screen and (max-width: 600px) {
+  #title-infos {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  h1 {
+    font-size: 1.2rem;
+  }
+}

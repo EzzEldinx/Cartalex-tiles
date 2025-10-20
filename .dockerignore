@@ -1,0 +1,22 @@
+# .dockerignore
+
+# Git files
+.git
+.gitignore
+
+# Node dependencies - these are installed inside the container via RUN npm install
+node_modules
+
+# Build output
+dist
+
+# Docker files
+Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Documentation and local config
+README.md
+README2.md
+readme.txt
+.env

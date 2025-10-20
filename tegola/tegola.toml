@@ -1,0 +1,32 @@
+# tegola/tegola.toml — Configured for points ONLY
+
+[webserver]
+port = ":8080"
+
+[cache]
+type = "file"
+basepath = "/tmp/tegola_cache"
+
+[[providers]]
+name = "postgis_provider"
+type = "postgis"
+uri = "postgres://postgres:postgres@db:5432/cartalex_basileia_3857"
+
+  [[providers.layers]]
+  name = "sites_fouilles_data"
+  tablename = "public.sites_fouilles"
+  geometry_fieldname = "geom"
+  id_fieldname = "fid"
+  srid = 3857
+  
+  # NOTE: Points do not need a buffer or simplification settings.
+
+[[maps]]
+name = "cartalex"
+center = [29.9187, 31.2001, 10.0]
+
+  [[maps.layers]]
+  provider_layer = "postgis_provider.sites_fouilles_data"
+  name = "sites_fouilles"
+  min_zoom = 0
+  max_zoom = 22

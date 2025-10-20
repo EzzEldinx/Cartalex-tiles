@@ -1,0 +1,73 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgis/postgis:13-3.1
+    container_name: cartalex_db
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=cartalex_basileia_3857
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./db-init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d cartalex_basileia_3857"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  tegola:
+    image: gospatial/tegola:v0.21.2
+    container_name: cartalex_tegola
+    ports:
+      - "8080:8080"
+    command: serve --config /etc/tegola/config.toml
+    volumes:
+      - ./tegola/tegola.toml:/etc/tegola/config.toml
+    environment:
+      - TEGOLA_WEBSERVER_CORS_ALLOW_ORIGIN=*
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  pgtileserv:
+    image: pramsey/pg_tileserv
+    container_name: cartalex_pgtileserv
+    ports:
+      - "7800:7800"
+    environment:
+      - DATABASE_URL=postgres://postgres:postgres@db:5432/cartalex_basileia_3857
+      - CORS_ORIGIN=*   # CORS fix
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  app:
+    build: .
+    container_name: cartalex_app
+    ports:
+      - "3000:3000"
+    environment:
+      - DB_HOST=db
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_PORT=5432
+      - DB_NAME=cartalex_basileia_3857
+      - CORS_ORIGIN=http://localhost:3000
+    depends_on:
+      db:
+        condition: service_healthy
+      tegola:
+        condition: service_started
+      pgtileserv:
+        condition: service_started
+    restart: unless-stopped
+
+volumes:
+  pgdata:

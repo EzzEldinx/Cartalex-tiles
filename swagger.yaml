@@ -1,0 +1,59 @@
+openapi: 3.0.0
+info:
+  title: Cartalex API
+  version: 1.0.0
+  description: API documentation for the Cartalex backend
+servers:
+  - url: http://localhost:3000
+paths:
+  /health:
+    get:
+      summary: Health check
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+  /getValues/vestiges:
+    get:
+      summary: Get vestiges values
+      parameters:
+        - in: query
+          name: field
+          schema:
+            type: string
+          required: true
+          description: Field to select
+        - in: query
+          name: order
+          schema:
+            type: string
+          required: false
+          description: Field to order by
+        - in: query
+          name: limit
+          schema:
+            type: integer
+          required: false
+          description: Pagination limit
+        - in: query
+          name: offset
+          schema:
+            type: integer
+          required: false
+          description: Pagination offset
+      responses:
+        '200':
+          description: List of vestiges
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object 

@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  
+  <title class="notranslate">Cartalex - Centre d'Études Alexandrines</title>
+  <link class="" href="https://fonts.googleapis.com/css2?family=Open+Sans&family=Merriweather&display=swap" rel="stylesheet">
+
+  <style>
+
+body {
+  top: 0px !important;
+  
+}
+
+
+body {
+    top: 0px !important; 
+}
+  html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  .wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  main {
+    flex: 1;
+    padding: 40px 20px;
+    max-width: 900px;
+    margin: auto;
+    /*background: white; 
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.05);*/
+  }
+  body {
+    margin: 0;
+    font-family: 'Open Sans', sans-serif;
+    background: #ffffff;
+  }
+
+  header {
+    background-color: white;
+    border-bottom: 1px solid #ccc;
+    padding: 20px 40px;
+  }
+
+  .logo-title-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-left: 130px; /* <-- this controls how far right it shifts */
+  }
+
+  .logo-title-wrapper img {
+    height: 110px;
+    margin-bottom: 12px;
+  }
+
+  .site-title h1 {
+    /*font-family: 'Merriweather', serif;*/
+    font-family: "Raleway", Helvetica, Arial, sans-serif;
+    font-size: 1.2em;
+    letter-spacing: 1px;
+    margin: 0;
+    color: #000;
+    display: initial;
+    vertical-align: middle;
+    font-weight: 600;
+  }
+
+  .site-title p {
+    margin: 5px 0 0;
+    font-size: 1em;
+    color: #555;
+  }
+
+  nav {
+    background-color: #faf9f9;
+    text-align: center;
+    padding: 15px;
+  }
+
+  nav a {
+    color: rgb(12, 12, 12);
+    text-decoration: none;
+    margin: 0 20px;
+    font-size: 1.1em;
+    transition: color 0.3s;
+  }
+
+  nav a:hover {
+    color: rgb(65, 88, 208);
+  }
+
+  footer {
+    background:#faf9f9;
+    color: rgb(12, 12, 12);
+    text-align: center;
+    padding: 20px;
+    font-size: 0.9em;
+  }
+
+  footer a {
+    color: #4b61f3;
+    text-decoration: none;
+  }
+
+  footer a:hover {
+    text-decoration: underline;
+  }
+
+  @media screen and (max-width: 768px) {
+    header {
+      padding: 15px 20px;
+    }
+
+    .logo-title-wrapper {
+      margin-left: 20px;           /* reduce left shift on small screens */
+    }
+
+    .logo-title-wrapper img {
+      height: 80px;                /* smaller logo */
+      margin-bottom: 8px;
+    }
+
+    .site-title h1 {
+      font-size: 1em;              /* smaller title */
+    }
+
+    .site-title p {
+      font-size: 0.9em;            /* smaller subtitle */
+    }
+
+    nav a {
+      margin: 0 10px;              /* tighter nav links */
+      font-size: 1em;
+    }
+
+    .nav {
+      background-color: #efeded;
+    }
+
+    .nav-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 20px;
+    }
+
+    .nav-logo {
+      order: 2; /* ✅ Push the hamburger icon to the right */
+      font-size: 28px;
+      cursor: pointer;
+      display: none; /* Default: hidden */
+    }
+
+    .nav-links a {
+      color: rgb(12, 12, 12);
+      text-decoration: none;
+      margin: 0 20px;
+      font-size: 1.1em;
+      transition: color 0.3s;
+    }
+
+    .nav-links a:hover {
+      color: #4b61f3;
+    }
+
+    /* Mobile layout */
+    @media screen and (max-width: 768px) {
+      .nav-links {
+        display: none;
+        flex-direction: column;
+        padding-top: 10px;
+      }
+
+      .nav-links a {
+        margin: 10px 0;
+        font-size: 1em;
+      }
+
+      .nav-links.show {
+        display: flex;
+      }
+    }
+
+    main {
+      padding: 20px 10px;
+    }
+
+    footer {
+      padding: 15px;
+      font-size: 0.85em;
+    }
+  }
+
+  .nav-logo {
+    font-size: 28px;
+    cursor: pointer;
+    display: none; /* Default: hidden */
+  }
+
+  @media screen and (max-width: 768px) {
+    .nav-logo {
+      display: block; /* Show only on small screens */
+    }
+
+    .nav-links {
+      display: none;
+      flex-direction: column;
+      padding-top: 10px;
+    }
+
+    .nav-links a {
+      margin: 10px 0;
+      font-size: 1em;
+    }
+
+    .nav-links.show {
+      display: flex;
+    }
+  }
+
+  /* Small CSS to suppress Google banner if it appears */
+  .goog-te-banner-frame, .goog-te-balloon-frame { display: none !important; }
+  body { top: 0 !important; }
+
+  </style>
+</head>
+
+
+
+  
+
+
+</div>
+
+<!-- your existing script -->
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const navLogo = document.querySelector('.nav-logo');
+    const mobileMenu = document.getElementById('mobileMenu');
+
+    if (navLogo && mobileMenu) {
+      navLogo.addEventListener('click', () => {
+        mobileMenu.classList.toggle('show');
+      });
+    }
+  });
+</script>
+
+<body>
+  <script>
+  document.addEventListener("DOMContentLoaded", function () {
+    if (document.body.style.top) {
+        document.body.style.top = "0px";
+    }
+});
+</script>
+  <div class="wrapper">
+    <header>
+      <div class="logo-title-wrapper">
+        <a href="index.html"><img src="https://www.cealex.org/wp-content/uploads/2024/05/newlogo.png" alt="CEALEX Logo"></a>
+        <div class="site-title">
+          <h1>CENTRE D'ÉTUDES ALEXANDRINES</h1>
+          <p>UAR 3134</p>
+        </div>
+      </div>
+    </header>
+
+    <nav class="nav">
+      <div class="nav-container">
+        <div class="nav-logo">☰</div> <!-- Hamburger icon -->
+        <div class="nav-links" id="mobileMenu">
+          <a href="index.html">Présentation</a>
+          <a href="https://www.cealex.org/le-cealex/" target="_blank">Le CEAlex</a>
+          <a href="/carte" target="_blank">Carte</a>
+          <a href="bibliographe.html">Bibliographie</a>
+        </div>
+      </div>
+    </nav>
+
+    <main>
+      <!--<h2>Bienvenue sur le site du CEAlex</h2> -->
+      <p>La cartothèque du CEAlex dispose de plus de 2 000 cartes et plans, modernes et historiques, datant du XVIe au XXIe siècle. Il s’agit de vues en perspective, de cartes marines, de plans topographiques, de plans cadastraux, de cartes géologiques, des cartes touristiques, de plans d’assurance, et pour la période récente, d’orthophotoplans ou de cartes satellitaires.</p>
+
+      <p>Le fonds constitue la base documentaire de l’étude de la cartographie historique d’Alexandrie et sa région, mais on peut également y trouver des cartes d’Égypte ou des plans ou cartes d’autres régions d’Égypte, ainsi que de régions de pays méditerranéens (Grèce, Italie, etc.).</p>
+
+      <p>Les cartes et plans peuvent être consultés du dimanche au jeudi, de 8h30 à 14h et de 15h à 16h30. Merci de prendre rendez-vous en écrivant à <a href="mailto:topo@cea.com.eg" target="_blank">topo@cea.com.eg</a></p>
+    </main>
+
+    <footer>
+      <em>&copy; 2024 Centre d'Études Alexandrines – <a href="https://www.cealex.org/mentions-legales/" target="_blank">Mentions légales</a></em>
+    </footer>
+  </div>
+ 
+</body>
+</html>

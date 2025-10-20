@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Cartalex - Interactive map interface for archaeological data visualization.">
+    <title>Cartalex</title>
+    <link rel="icon" type="image/jpeg" href="../img/menu.jpg" />
+  </head>
+  <body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    
+    <header role="banner">
+      <h1>Cartalex Map</h1>
+    </header>
+
+    <main id="main-content" tabindex="-1">
+      <!-- Map -->
+      <div id="map" aria-label="Map display area"></div>
+
+      <!-- Popup -->
+      <div id="popup" class="ol-popup" role="dialog" aria-modal="true">
+        <a href="#" id="popup-closer" class="ol-popup-closer" aria-label="Close popup">Close</a>
+        <div id="popup-content"></div>
+      </div>
+
+      <!-- Volet haut -->
+      <div id="volet_haut_clos">
+        <div id="volet_haut"></div>
+        <nav class="onglets_haut" aria-label="Top filters">
+          <a href="#" class="ouvrir">Filtres de requête ▼</a>
+          <a href="#" class="fermer">Fermer le volet</a>
+        </nav>
+      </div>
+
+      <!-- Volet gauche -->
+      <div id="volet_gauche_clos">
+        <div id="volet_gauche">
+          <ul id="items" class="layerDragbox" aria-label="Layer selection"></ul>
+        </div>
+        <nav class="onglets_gauche" aria-label="Left panel">
+          <a href="#" class="ouvrir">Choix des couches</a>
+          <a href="#" class="fermer">Fermer le volet</a>
+        </nav>
+      </div>
+
+      <!-- Coordinates display -->
+      <div id="coordinates-display" class="map-overlay">Coordinates: --</div>
+
+      <!-- Credits -->
+      <div id="map-credits">
+        <ul>
+          <li id="project-credit">Project credits here</li>
+        </ul>
+      </div>
+    </main>
+
+    <footer role="contentinfo">
+      <span>End of map page</span>
+    </footer>
+  </body>
+</html>
