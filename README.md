@@ -7,6 +7,10 @@ Cartalex is a comprehensive web-based archaeological mapping platform developed 
 
 The system serves as a digital cartographic library containing over 2,000 maps and plans dating from the 16th to the 21st century, including perspective views, marine charts, topographical plans, cadastral maps, geological maps, tourist maps, insurance plans, orthophotoplans, and satellite imagery.
 
+***HOW TO RUN THE SCRIPT TO ADJUST THE POINTS'S LOCATION***  
+docker exec -i cartalex_db psql -U postgres -d cartalex_basileia_3857 < master_correction.sql
+
+
 ## Features
 
 - **Interactive Web Map**: Real-time visualization of archaeological excavation sites using MapLibre GL
@@ -281,8 +285,6 @@ curl http://localhost:7800/index.html
 # Connect to database
 docker exec -it cartalex_db psql -U postgres -d cartalex_basileia_3857
 
-***HOW TO RUN THE SCRIPT***  
-docker exec -i cartalex_db psql -U postgres -d cartalex_basileia_3857 < master_correction.sql
 
 
 # Run test queries

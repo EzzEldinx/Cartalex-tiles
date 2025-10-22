@@ -7,23 +7,34 @@
              Un site de fouille peut présenter plusieurs vestiges.",
             sub_filters: [
                 {
-                    name: 'caracterisation'
-                },
-                {
-                    name: 'periode',
+                    // 1. "caracterisation" → "Caractérisation"
+                    name: 'caracterisation',
+                    // Adding alias for display name change
                     request_options: {
-                        fromTable : 'periodes',
-                        order: 'date_debut'
+                        alias: 'Caractérisation'
                     }
                 },
                 {
+                    // 2. "period" → "Période"
+                    name: 'periode',
+                     // Adding alias for display name change
+                    request_options: {
+                        fromTable : 'periodes',
+                        order: 'date_debut',
+                        alias: 'Période'
+                    }
+                },
+                {
+                    // 3. "datations" → "Datation"
                     name: 'datations',
                     options:{
                         isNumeric: true
                     },
                     request_options:{
                         floor: 'date_debut',
-                        ceil: 'date_fin'
+                        ceil: 'date_fin',
+                        // Adding alias for display name change
+                        alias: 'Datation'
                     }
                 }
             ]
@@ -39,15 +50,17 @@
                     sub_filter_infos: "Des informations sur ce sous-filtre",
                     request_options: {
                         fromTable: 'personnes',
-                        alias: 'inventeur'
+                        // 4. "inventeur" → "Inventeur"
+                        alias: 'Inventeur'
                     }
-                    
+
                 },
                 {
                     name: 'date_decouverte',
                     request_options: {
-                        alias: 'date_de_la_decouverte'
-                    } 
+                        // 5. "date-de-la-decouverte" → "Date de la découverte"
+                        alias: 'Date de la découverte'
+                    }
                 }
             ]
         },
@@ -60,19 +73,22 @@
                 {
                     name: 'nom_document',
                     request_options: {
-                        alias: 'nom_du_document'
+                        // 6. "nom-du-document" → "Nom du document"
+                        alias: 'Nom du document'
                     }
                 },
                 {
                     name: 'nom',
                     request_options: {
                         fromTable: 'personnes',
-                        alias: 'auteur'
-                    } 
+                        // 7. "auteur" → "Auteur"
+                        alias: 'Auteur'
+                    }
                 }
             ]
         }
     ]
     // The parcellesRegion filter object has been removed from here.
 };
+ // The api_at constant definition should remain unchanged
  export const api_at = "http://85.234.139.116:3000";

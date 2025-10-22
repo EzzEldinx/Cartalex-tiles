@@ -55,7 +55,7 @@ export class DistanceMeasure {
                 <path d="M12 2L13.09 8.26L19 7L17.74 13.09L22 12L15.74 13.09L17 19L10.91 17.74L12 22L10.91 15.74L5 17L6.26 10.91L2 12L8.26 10.91L7 5L13.09 6.26L12 2Z"/>
                 <circle cx="12" cy="12" r="2"/>
             </svg>
-            <span>Measure</span>
+            <span>Mesure</span>
         `;
         this.button.setAttribute('aria-label', 'Measure Distance');
         this.button.setAttribute('aria-pressed', 'false');

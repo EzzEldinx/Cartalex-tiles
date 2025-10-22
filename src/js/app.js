@@ -28,9 +28,9 @@ export class App {
         console.log('Initializing application...');
         try {
             await this.initFilters();
-            this.initLayerList();
+            this.initLayerList(); // This function is now edited
             this.initEventListeners();
-            this.initMapClickListener(); // This is the updated function
+            this.initMapClickListener(); 
             this.initDeepLinkHandlers();
             this.initHoverEffect();
             this.initDistanceMeasure();
@@ -47,9 +47,50 @@ export class App {
         buildFilterUI(this.filterCollection.getFilters());
     }
 
+    /**
+     * --- EDITED FUNCTION ---
+     * This function now sorts the layers into your custom order
+     * BEFORE passing them to the UI builder.
+     */
     initLayerList() {
+        // 1. Get all layers from the map style (in their drawing order)
         const allLayers = this.map.getStyle().layers;
-        buildLayerList(allLayers, this.map, this.historicalMapIds);
+
+        // 2. Filter out layers we want to hide (like ...-line and hover effects)
+        const layersForUI = allLayers.filter(layer => {
+            return !(layer.metadata && layer.metadata['filter-ui'] === 'ignore');
+        });
+
+        // 3. Define YOUR exact desired order using the layer IDs
+        const desiredOrder = [
+            'sites_fouilles-points',         // 1. Découvertes archéologiques...
+            'emprises-fill',                   // 2. Emprises des sites...
+            'espaces_publics-fill',            // 3. Espaces publics...
+            'littoral-line',                   // 4. Littoral
+            'parcelles_region-fill',         // 5. Cadastre Alexandrin...
+            'Plan de Tkaczow west',            // 6. Plan de Tkaczow west
+            'Plan de Tkaczow east',            // 7. Plan de Tkaczow east
+            'Plan de Tkaczow, 1993',         // 8. Plan de Tkaczow, 1993
+            "Plan d'Adriani, 1934",          // 9. Plan d'Adriani, 1934
+            'Restitution de Mahmoud bey el-Falaki, 1866', // 10. Restitution de Mahmoud...
+            'satellite-background',            // 11. Google Earth
+            'osm-background'                   // 12. OpenStreetMap
+        ];
+
+        // 4. Sort the 'layersForUI' array based on your 'desiredOrder'
+        const sortedLayersForUI = layersForUI.sort((a, b) => {
+            const indexA = desiredOrder.indexOf(a.id);
+            const indexB = desiredOrder.indexOf(b.id);
+            
+            // Handle any layers not in the list (just in case)
+            const effectiveIndexA = (indexA === -1) ? Infinity : indexA;
+            const effectiveIndexB = (indexB === -1) ? Infinity : indexB;
+
+            return effectiveIndexA - effectiveIndexB;
+        });
+
+        // 5. Pass the newly sorted array to the UI builder
+        buildLayerList(sortedLayersForUI, this.map, this.historicalMapIds);
     }
 
     initEventListeners() {
@@ -63,10 +104,6 @@ export class App {
 
     /**
      * UPDATED CLICK LISTENER
-     * This now handles two types of clicks:
-     * 1. Clicking on an archaeological site ('sites_fouilles-points') to show a popup.
-     * 2. Clicking anywhere else on the map to copy the coordinates to the clipboard.
-     * 3. Distance measurement mode (handled by DistanceMeasure component).
      */
     initMapClickListener() {
         // Listen for all clicks on the map canvas.
@@ -88,12 +125,12 @@ export class App {
                 const coordinates = feature.geometry.coordinates.slice();
                 const fid = feature.id; // Using `feature.id` as in your original code
 
-				// Copy the coordinates of the clicked feature as well
-				const lngStr = Number(coordinates[0]).toFixed(6);
-				const latStr = Number(coordinates[1]).toFixed(6);
-				const coordsStr = `${latStr}, ${lngStr}`;
-				this.copyToClipboard(coordsStr);
-				this.showCopyConfirmation(coordsStr);
+                // Copy the coordinates of the clicked feature as well
+                const lngStr = Number(coordinates[0]).toFixed(6);
+                const latStr = Number(coordinates[1]).toFixed(6);
+                const coordsStr = `${latStr}, ${lngStr}`;
+                this.copyToClipboard(coordsStr);
+                this.showCopyConfirmation(coordsStr);
 
                 // Smooth Google-Earth-like fly-to
                 this.flyToCoordinates(coordinates, { zoom: 18, duration: 2000 });
@@ -372,9 +409,23 @@ export class App {
 
     // --- End of new functions ---
 
+    /**
+     * --- EDITED FUNCTION ---
+     * When a fill layer is toggled, this now also toggles the corresponding
+     * line layer that we created in index.js.
+     */
     toggleLayerVisibility(layerId, isVisible) {
         const visibility = isVisible ? 'visible' : 'none';
+        
+        // Set visibility for the main layer
         this.map.setLayoutProperty(layerId, 'visibility', visibility);
+
+        // Check if this is one of our special fill layers and toggle the line layer too
+        if (layerId === 'espaces_publics-fill') {
+            this.map.setLayoutProperty('espaces_publics-line', 'visibility', visibility);
+        } else if (layerId === 'emprises-fill') {
+            this.map.setLayoutProperty('emprises-line', 'visibility', visibility);
+        }
     }
 
     setLayerOpacity(layerId, opacity) {
@@ -416,4 +467,3 @@ export class App {
         console.log('Distance Measure tool initialized');
     }
 }
-

@@ -1,7 +1,9 @@
+// ... (keep existing imports)
+
 export function buildFilterUI(filters) {
   const container = document.getElementById('volet_haut');
   if (!container) return;
-  
+
   let html = '<div class="filter-collection-content">';
   for (const filterName in filters) {
     const filter = filters[filterName];
@@ -11,47 +13,57 @@ export function buildFilterUI(filters) {
         <div class="subfilter-container">
     `;
     for (const subFilter of filter.getSubFilters()) {
+      // Use displayName for the title
       html += `
         <div class="subfilter-content-wrapper">
-          <h4 class="subfilter-title" data-subfilter-name="${subFilter.name}">${subFilter.alias || subFilter.name}</h4>
+          <h4 class="subfilter-title" data-subfilter-name="${subFilter.name}">${subFilter.displayName}</h4>
           <ul class="subfilter-content">
       `;
       if (subFilter.isNumeric) {
-        const idPrefix = `${filter.name}-${subFilter.name}`;
-        html += `
-          <li class="numeric-filter-inputs">
-            <div>
-              <label for="${idPrefix}-floor">Date debut :</label>
-              <input type="number" id="${idPrefix}-floor" class="numeric-input-floor" placeholder="YYYY">
-            </div>
-            <div>
-              <label for="${idPrefix}-ceil">Date fin :</label>
-              <input type="number" id="${idPrefix}-ceil" class="numeric-input-ceil" placeholder="YYYY">
-            </div>
-            <div>
-              <label for="${idPrefix}-apply">Appliquer ce filtre :</label>
-              <input type="checkbox" id="${idPrefix}-apply" class="numeric-apply-checkbox">
-            </div>
-          </li>`;
+        // ... (numeric filter HTML remains the same)
+         const idPrefix = `${filter.name}-${subFilter.name}`;
+         html += `
+           <li class="numeric-filter-inputs">
+             <div>
+               <label for="${idPrefix}-floor">Date debut :</label>
+               <input type="number" id="${idPrefix}-floor" class="numeric-input-floor" placeholder="YYYY">
+             </div>
+             <div>
+               <label for="${idPrefix}-ceil">Date fin :</label>
+               <input type="number" id="${idPrefix}-ceil" class="numeric-input-ceil" placeholder="YYYY">
+             </div>
+             <div>
+               <label for="${idPrefix}-apply">Appliquer ce filtre :</label>
+               <input type="checkbox" id="${idPrefix}-apply" class="numeric-apply-checkbox">
+             </div>
+           </li>`;
       } else {
+        // Iterate over the transformed values from getValues()
         subFilter.getValues().forEach(valueObj => {
-          const value = valueObj[subFilter.alias || subFilter.name];
+          // valueObj is now { internalValue: '...', displayValue: '...', checked: false }
+          const internalValue = valueObj.internalValue;
+          const displayValue = valueObj.displayValue;
+          // Create a unique ID using filter name, subfilter name, and internal value
+          const inputId = `${filter.name}-${subFilter.name}-${String(internalValue).replace(/\s+/g, '-')}`; // Ensure ID is valid
+
           html += `
             <li>
-              <input type="checkbox" id="${filter.name}-${subFilter.name}-${value}" name="${subFilter.name}" value="${value}">
-              <label for="${filter.name}-${subFilter.name}-${value}">${value}</label>
+              <input type="checkbox" id="${inputId}" name="${subFilter.name}" value="${internalValue}">
+              <label for="${inputId}">${displayValue}</label>
             </li>
           `;
         });
       }
-      html += `</ul></div>`;
+      html += `</ul></div>`; // Close subfilter-content-wrapper and ul
     }
-    html += `</div></div>`;
+    html += `</div></div>`; // Close subfilter-container and filter-content
   }
-  html += '</div><button class="close-panel-button">Fermer le volet</button>';
+  html += '</div><button class="close-panel-button">Fermer le volet</button>'; // Close filter-collection-content and add button
   container.innerHTML = html;
 }
 
+
+// ... (buildLayerList remains the same)
 export function buildLayerList(layers, map, historicalMapIds = []) {
     const container = document.getElementById('items');
     if (!container) return;
@@ -77,7 +89,7 @@ export function buildLayerList(layers, map, historicalMapIds = []) {
         // START: HIDE ANIMATION LAYERS
         // If the current layer's ID is in our hidden list, skip it and do not create a list item.
         if (hiddenLayerIds.includes(layer.id)) {
-            return; 
+            return;
         }
         // END: HIDE ANIMATION LAYERS
 
@@ -90,7 +102,7 @@ export function buildLayerList(layers, map, historicalMapIds = []) {
             <li class="listitem">
                 <input type="checkbox" id="layer-${layer.id}" data-layer-id="${layer.id}" ${checkedAttribute}>
                 <label for="layer-${layer.id}">${layerName}</label>`;
-        
+
         if (historicalMapIds.includes(layer.id) || layer.id === 'parcelles_region-fill') {
             html += `
                 <div class="slider-container" style="display: ${isVisible ? 'block' : 'none'};">
@@ -103,99 +115,123 @@ export function buildLayerList(layers, map, historicalMapIds = []) {
 }
 
 export function attachAllEventListeners(filters, onFilterChangeCallback, onLayerToggleCallback, onOpacityChangeCallback) {
-  const voletHaut = document.getElementById('volet_haut');
-  const openFilterBtn = document.querySelector('.onglets_haut a.ouvrir');
-  const closeFilterBtn = voletHaut.querySelector('.close-panel-button');
+  // ... (Panel open/close logic remains the same)
+    const voletHaut = document.getElementById('volet_haut');
+    const openFilterBtn = document.querySelector('.onglets_haut a.ouvrir');
+    const closeFilterBtn = voletHaut.querySelector('.close-panel-button');
 
-  if (voletHaut && openFilterBtn && closeFilterBtn) {
-    openFilterBtn.addEventListener('click', (e) => { e.preventDefault(); voletHaut.classList.add('is-open'); });
-    closeFilterBtn.addEventListener('click', (e) => { e.preventDefault(); voletHaut.classList.remove('is-open'); });
-  }
+    if (voletHaut && openFilterBtn && closeFilterBtn) {
+        openFilterBtn.addEventListener('click', (e) => { e.preventDefault(); voletHaut.classList.add('is-open'); });
+        closeFilterBtn.addEventListener('click', (e) => { e.preventDefault(); voletHaut.classList.remove('is-open'); });
+    }
 
-  const voletGaucheClos = document.getElementById('volet_gauche_clos');
-  const voletGauche = document.getElementById('volet_gauche');
-  const openLayerBtn = voletGaucheClos.querySelector('.onglets_gauche a.ouvrir');
-  const closeLayerBtn = voletGaucheClos.querySelector('.onglets_gauche a.fermer');
-  if (voletGauche && openLayerBtn && closeLayerBtn) {
-      openLayerBtn.addEventListener('click', (e) => { e.preventDefault(); voletGauche.classList.add('is-open'); });
-      closeLayerBtn.addEventListener('click', (e) => { e.preventDefault(); voletGauche.classList.remove('is-open'); });
-  }
+    const voletGaucheClos = document.getElementById('volet_gauche_clos');
+    const voletGauche = document.getElementById('volet_gauche');
+    const openLayerBtn = voletGaucheClos.querySelector('.onglets_gauche a.ouvrir');
+    const closeLayerBtn = voletGaucheClos.querySelector('.onglets_gauche a.fermer');
+    if (voletGauche && openLayerBtn && closeLayerBtn) {
+        openLayerBtn.addEventListener('click', (e) => { e.preventDefault(); voletGauche.classList.add('is-open'); });
+        closeLayerBtn.addEventListener('click', (e) => { e.preventDefault(); voletGauche.classList.remove('is-open'); });
+    }
 
-  document.querySelectorAll('.subfilter-title').forEach(title => {
-    title.addEventListener('click', () => {
-      const content = title.nextElementSibling;
-      const isActive = title.classList.contains('active');
-      title.closest('.subfilter-container').querySelectorAll('.subfilter-content').forEach(c => { c.style.display = 'none'; });
-      title.closest('.subfilter-container').querySelectorAll('.subfilter-title').forEach(t => { t.classList.remove('active'); });
-      if (!isActive) {
-        content.style.display = 'block';
-        title.classList.add('active');
-      }
+
+  // ... (Subfilter title click logic remains the same)
+    document.querySelectorAll('.subfilter-title').forEach(title => {
+        title.addEventListener('click', () => {
+        const content = title.nextElementSibling;
+        const isActive = title.classList.contains('active');
+        // Close all sibling contents and remove active class from all sibling titles
+        title.closest('.subfilter-container').querySelectorAll('.subfilter-content').forEach(c => {
+            if (c !== content) c.style.display = 'none';
+        });
+        title.closest('.subfilter-container').querySelectorAll('.subfilter-title').forEach(t => {
+            if (t !== title) t.classList.remove('active');
+        });
+        // Toggle current content and active class
+        if (!isActive) {
+            content.style.display = 'block';
+            title.classList.add('active');
+        } else {
+            content.style.display = 'none';
+            title.classList.remove('active');
+        }
+        });
     });
-  });
 
-  document.querySelectorAll('.subfilter-content input[type="checkbox"]').forEach(checkbox => {
+
+  // Event listener for non-numeric filter checkboxes
+  document.querySelectorAll('.subfilter-content input[type="checkbox"]:not(.numeric-apply-checkbox)').forEach(checkbox => {
     checkbox.addEventListener('change', (e) => {
-      const { name, value, checked } = e.target;
+      const { value, checked } = e.target; // 'value' is the internalValue we set
       const filterName = e.target.closest('.filter-content').dataset.filterName;
+      // Get the subfilter's internal name from the data attribute on the title
+      const subFilterName = e.target.closest('.subfilter-content-wrapper').querySelector('.subfilter-title').dataset.subfilterName;
+
       const filter = filters[filterName];
       if (!filter) return;
-      const subFilter = filter.getSubFilter(name);
+      const subFilter = filter.getSubFilter(subFilterName); // Get subfilter by its internal name
       if (!subFilter) return;
-      if (checked) { subFilter.checkValue(value); } 
-      else { subFilter.unCheckValue(value); }
+
+      // Use the checkbox's value (which is internalValue)
+      if (checked) {
+        subFilter.checkValue(value);
+      } else {
+        subFilter.unCheckValue(value);
+      }
+
       filter.active = filter.getActiveSubFilters().length > 0;
-      onFilterChangeCallback();
+      onFilterChangeCallback(); // Trigger map update
     });
   });
 
-  document.querySelectorAll('.numeric-filter-inputs').forEach(numericFilterLI => {
-      const filterContent = numericFilterLI.closest('.filter-content');
-      const subfilterTitle = numericFilterLI.closest('.subfilter-content-wrapper').querySelector('.subfilter-title');
-      
-      const filterName = filterContent.dataset.filterName;
-      const subFilterName = subfilterTitle.dataset.subfilterName;
+  // ... (Numeric filter and layer list event listeners remain the same)
+    document.querySelectorAll('.numeric-filter-inputs').forEach(numericFilterLI => {
+        const filterContent = numericFilterLI.closest('.filter-content');
+        const subfilterTitle = numericFilterLI.closest('.subfilter-content-wrapper').querySelector('.subfilter-title');
 
-      const filter = filters[filterName];
-      if (!filter) return;
-      const subFilter = filter.getSubFilter(subFilterName);
-      if (!subFilter || !subFilter.isNumeric) return;
+        const filterName = filterContent.dataset.filterName;
+        const subFilterName = subfilterTitle.dataset.subfilterName;
 
-      const floorInput = numericFilterLI.querySelector('.numeric-input-floor');
-      const ceilInput = numericFilterLI.querySelector('.numeric-input-ceil');
-      const applyCheckbox = numericFilterLI.querySelector('.numeric-apply-checkbox');
+        const filter = filters[filterName];
+        if (!filter) return;
+        const subFilter = filter.getSubFilter(subFilterName);
+        if (!subFilter || !subFilter.isNumeric) return;
 
-      const updateFilter = () => {
-          subFilter.setFloor(floorInput.value || '');
-          subFilter.setCeil(ceilInput.value || '');
-          subFilter.setEnabled(applyCheckbox.checked);
-          filter.active = filter.getActiveSubFilters().length > 0;
-          onFilterChangeCallback();
-      };
+        const floorInput = numericFilterLI.querySelector('.numeric-input-floor');
+        const ceilInput = numericFilterLI.querySelector('.numeric-input-ceil');
+        const applyCheckbox = numericFilterLI.querySelector('.numeric-apply-checkbox');
 
-      floorInput.addEventListener('input', updateFilter);
-      ceilInput.addEventListener('input', updateFilter);
-      applyCheckbox.addEventListener('change', updateFilter);
-  });
+        const updateFilter = () => {
+            subFilter.setFloor(floorInput.value || '');
+            subFilter.setCeil(ceilInput.value || '');
+            subFilter.setEnabled(applyCheckbox.checked);
+            filter.active = filter.getActiveSubFilters().length > 0;
+            onFilterChangeCallback();
+        };
 
-  document.querySelectorAll('#items input[type="checkbox"]').forEach(checkbox => {
-      checkbox.addEventListener('change', (e) => {
-          const layerId = e.target.dataset.layerId;
-          const isVisible = e.target.checked;
-          onLayerToggleCallback(layerId, isVisible);
-          const sliderContainer = e.target.closest('.listitem').querySelector('.slider-container');
-          if (sliderContainer) {
-              sliderContainer.style.display = isVisible ? 'block' : 'none';
-          }
-      });
-  });
-
-  document.querySelectorAll('.opacity-slider').forEach(slider => {
-    slider.addEventListener('input', (e) => {
-        const layerId = e.target.dataset.layerId;
-        const opacityValue = parseInt(e.target.value, 10) / 100;
-        onOpacityChangeCallback(layerId, opacityValue);
+        floorInput.addEventListener('input', updateFilter);
+        ceilInput.addEventListener('input', updateFilter);
+        applyCheckbox.addEventListener('change', updateFilter);
     });
-  });
+
+    document.querySelectorAll('#items input[type="checkbox"]').forEach(checkbox => {
+        checkbox.addEventListener('change', (e) => {
+            const layerId = e.target.dataset.layerId;
+            const isVisible = e.target.checked;
+            onLayerToggleCallback(layerId, isVisible);
+            const sliderContainer = e.target.closest('.listitem').querySelector('.slider-container');
+            if (sliderContainer) {
+                sliderContainer.style.display = isVisible ? 'block' : 'none';
+            }
+        });
+    });
+
+    document.querySelectorAll('.opacity-slider').forEach(slider => {
+        slider.addEventListener('input', (e) => {
+            const layerId = e.target.dataset.layerId;
+            const opacityValue = parseInt(e.target.value, 10) / 100;
+            onOpacityChangeCallback(layerId, opacityValue);
+        });
+    });
+
 }
-

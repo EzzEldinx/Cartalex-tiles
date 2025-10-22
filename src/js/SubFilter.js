@@ -1,133 +1,113 @@
-import {getValuesFromSubFilter} from './server_api.js';
+import { getValuesFromSubFilter } from './server_api.js';
 
 export class SubFilter {
-    constructor(filter_name, subfilter_config){
-        this.name = subfilter_config['name'];
+    constructor(filter_name, subfilter_config) {
+        this.name = subfilter_config['name']; // Internal identifier
         this.filter_name = filter_name;
-        this.options = subfilter_config['options'] ? subfilter_config['options'] : {};
-        this.request_options = subfilter_config['request_options'] ? subfilter_config['request_options'] : {};
-        this.values = [];
-        this.request_options ? this.initRequestOptions(): null;
-        this.options ? this.initOptions(): null;
+        this.options = subfilter_config['options'] || {};
+        this.request_options = subfilter_config['request_options'] || {};
+        this.values = []; // Will store objects like { internalValue: '...', displayValue: '...', checked: false }
 
-        // ✅ دعم للفلاتر الرقمية (numeric/date)
+        // Determine the display name (alias first, fallback to name)
+        this.displayName = this.request_options.alias || this.name;
+        this.order = this.request_options.order || '';
+        this.isNumeric = this.options.isNumeric || false;
+
         if (this.isNumeric) {
-            this.enabled = false;   // علشان نعرف هل مفعّل ولا لأ
-            this.floor = '';        // القيمة الدنيا
-            this.ceil = '';         // القيمة العليا
+            this.enabled = false;
+            this.floor = '';
+            this.ceil = '';
         }
     }
 
-    initRequestOptions(){
-        this.alias = this.request_options.alias ? this.request_options.alias : '';
-        this.order = this.request_options.order ? this.request_options.order : '';
-    }
+    // No initRequestOptions or initOptions needed, handled in constructor
 
-    initOptions(){
-        this.isNumeric = this.options.isNumeric ? true : false;
-    }
+    async initValues() {
+        let rawValues;
+        if (!this.isNumeric) {
+            rawValues = await getValuesFromSubFilter(this);
+            console.log(`Received raw values for ${this.name}:`, rawValues);
 
-    async initValues(){
-        let values;
-        if(!this.isNumeric){
-            values = await getValuesFromSubFilter(this);
-            console.log(`Received values for ${this.name}:`, values);
-
-            // ✅ معالجة الأخطاء: لو الـ API رجع حاجة غير Array
-            if (!Array.isArray(values)) {
-                console.warn(`Expected an array for ${this.name}, but received:`, values);
-                values = []; // fallback
+            if (!Array.isArray(rawValues)) {
+                console.warn(`Expected an array for ${this.name}, but received:`, rawValues);
+                rawValues = [];
             }
+            // Transform the raw data immediately
+            this.values = rawValues.map(item => {
+                // Determine the value used internally (should match the 'name' field)
+                // And the value for display (should match the 'alias' or 'name')
+                const internalValue = item[this.name];
+                const displayValue = item[this.displayName] || internalValue; // Fallback display to internal if alias value not found
+
+                return {
+                    internalValue: internalValue, // Always use the original name key
+                    displayValue: displayValue, // Use alias key if present, else original name key
+                    checked: false
+                };
+            }).filter(item => item.internalValue !== undefined && item.internalValue !== null); // Filter out items where internalValue failed
+
         } else {
-            // ✅ default structure للفلاتر الرقمية
-            values = [{ ceil: null, floor: null }];
+            // For numeric, we don't fetch distinct values, just store range info
+            this.values = []; // No list values needed for numeric
         }
-        this.setValues(values);
-        this.unCheckAll();
+        this.unCheckAll(); // Reset check status
     }
 
-    addValue(value){
-        this.values.push({
-            value: value,
-            checked: false
-        });
-    }
+    // Methods addValue and setValues are less relevant now, initValues transforms the data directly.
 
-    setValues(values){
-        this.values = values;
-    }
-
-    getValues(){
+    getValues() {
+        // Returns the transformed array: [{ internalValue: '...', displayValue: '...', checked: false }, ...]
         return this.values;
     }
 
-    checkAll(){
-        for(let value of this.values){
-            value.checked = true;
-        }
+    checkAll() {
+        this.values.forEach(value => { value.checked = true; });
     }
 
-    unCheckAll(){
-        for(let value of this.values){
-            value.checked = false;
-        }
+    unCheckAll() {
+        this.values.forEach(value => { value.checked = false; });
     }
 
-    checkValue(content){
-        let seekField = this.alias ? this.alias : this.name;
+    checkValue(internalContent) {
+        // Find by internalValue
         try {
-            const valueToUpdate = this.values.find(value => value[seekField] == content);
+            const valueToUpdate = this.values.find(value => String(value.internalValue) === String(internalContent));
             if (valueToUpdate) {
                 valueToUpdate.checked = true;
+            } else {
+                 console.warn(`checkValue: Could not find value for internalContent "${internalContent}"`);
             }
         } catch (error) {
-            console.log(`Error checking value: ${content}`, error);
+            console.log(`Error checking value: ${internalContent}`, error);
         }
     }
 
-    unCheckValue(content){
-        let seekField = this.alias ? this.alias : this.name;
+    unCheckValue(internalContent) {
+        // Find by internalValue
         try {
-            const valueToUpdate = this.values.find(value => value[seekField] == content);
+            const valueToUpdate = this.values.find(value => String(value.internalValue) === String(internalContent));
             if (valueToUpdate) {
                 valueToUpdate.checked = false;
+            } else {
+                 console.warn(`unCheckValue: Could not find value for internalContent "${internalContent}"`);
             }
         } catch (error) {
-            console.log(`Error unchecking value: ${content}`, error);
+            console.log(`Error unchecking value: ${internalContent}`, error);
         }
     }
 
-    // ✅ إدارة حالة الفلاتر الرقمية
-    setEnabled(enabled) {
-        if (this.isNumeric) {
-            this.enabled = enabled;
-        }
-    }
+    // Numeric filter methods remain the same
+    setEnabled(enabled) { if (this.isNumeric) { this.enabled = enabled; } }
+    isEnabled() { return this.isNumeric && this.enabled; }
+    setCeil(ceil) { this.ceil = ceil; }
+    getCeil() { return this.ceil; }
+    setFloor(floor) { this.floor = floor; }
+    getFloor() { return this.floor; }
 
-    isEnabled() {
-        return this.isNumeric && this.enabled;
-    }
-
-    setCeil(ceil){
-        this.ceil = ceil;
-    }
-
-    getCeil(){
-        return this.ceil;   
-    }
-
-    setFloor(floor){
-        this.floor = floor;
-    }
-
-    getFloor(){
-        return this.floor;
-    }
-
-    getSelectedValues(){
-        const seekField = this.alias || this.name;
+    getSelectedValues() {
+        // Return only the internalValues that are checked
         return this.values
             .filter(value => value.checked)
-            .map(value => value[seekField]);
+            .map(value => value.internalValue);
     }
 }
