@@ -87,7 +87,7 @@ const map = new maplibregl.Map({
                 source: 'pgts_espaces_publics',
                 'source-layer': 'public.espaces_publics',
                 layout: { 'visibility': 'none' },
-                paint: { 'line-color': '#4E98D7', 'line-width': 2.5 },
+                paint: { 'line-color': '#4E98D7', 'line-width': 1 },
                 metadata: { 'filter-ui': 'ignore' }
             },
             // Littoral

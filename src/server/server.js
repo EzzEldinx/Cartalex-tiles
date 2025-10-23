@@ -31,7 +31,7 @@ app.engine('html', ejs.renderFile);
 app.set('views', dist_dir);
 
 // CORS configuration
-const allowedOrigins = [process.env.CORS_ORIGIN || 'http://localhost:3000'];
+const allowedOrigins = [process.env.CORS_ORIGIN || 'http://localhost:5000'];
 app.use(cors({
   origin: function (origin, callback) {
     if (!origin || allowedOrigins.indexOf(origin) !== -1) {
